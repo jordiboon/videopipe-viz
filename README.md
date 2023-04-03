@@ -18,7 +18,8 @@
 
 - takes in an `.mp4` and a `.json` as input
 - this doesn't need to be blazing fast: for now the idea is to create visualizations after a video is processed, not at streaming time 
-- [optional] modular: different outputs of videopipe can be shown to the user on the same video
+- [optional] modular: different outputs of videopipe can be shown to the user on the same video  
+- [optional] conduct a human evaluation on the explainability aspect
 
 
 ## references
