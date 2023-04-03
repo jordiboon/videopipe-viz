@@ -25,4 +25,4 @@
 
 **Dynamic Object Scanning: Object-Based Elastic Timeline for Quickly Browsing First-Person Videos**  
 *Seita Kayukawa, Keita Higuchi, Ryo Yonetani, Masanori Nakamura, Yoichi Sato, Shigeo Morishima*  
-CHI 2018 – [[paper](https://dl.acm.org/doi/pdf/10.1145/3170427.3186501)]
+CHI 2018 (extended abstract) – [[paper](https://dl.acm.org/doi/pdf/10.1145/3170427.3186501)]
