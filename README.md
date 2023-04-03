@@ -16,7 +16,7 @@
 
 - [mediapipe](https://github.com/google/mediapipe)
 - Google's Cloud Video Intelligence, [here](https://youtu.be/hX71H78UYAc?t=845) and [here](https://youtu.be/hX71H78UYAc?t=974)
-- annotation platforms. For example [Labelbox](https://docs.labelbox.com/docs/video-annotations), [label studio](https://github.com/heartexlabs/label-studio) (open source!)
+- annotation platforms. For example [Labelbox](https://docs.labelbox.com/docs/video-annotations), [label studio](https://github.com/heartexlabs/label-studio) (open source!) or [Diffgram](https://diffgram.readme.io/docs/video-introduction) (open source!)
 
 ## possible tools
 
