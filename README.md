@@ -24,14 +24,17 @@
 
 ## references
 
-**Dynamic Object Scanning: Object-Based Elastic Timeline for Quickly Browsing First-Person Videos**  
-*Seita Kayukawa, Keita Higuchi, Ryo Yonetani, Masanori Nakamura, Yoichi Sato, Shigeo Morishima*  
-CHI 2018 (extended abstract) – [[paper](https://dl.acm.org/doi/pdf/10.1145/3170427.3186501)]
+**AI-Based Visualization of Voice Characteristics in Lecture Videos’ Captions**  
+*Tim Schlippe, Katrin Fritsche, Ying Sun, Matthias Wölfel*  
+International Conference on Artificial Intelligence in Education Technology 2023 – [[paper](https://link.springer.com/chapter/10.1007/978-981-19-8040-4_8)]
 
 **A survey of surveys on the use of visualization for interpreting machine learning models**  
 *Angelos Chatzimparmpas, Rafael M. Martins, Ilir Jusufi, Andreas Kerren*  
 Information visualization 2020 – [[paper](https://journals.sagepub.com/doi/10.1177/1473871620904671)]
 
-**AI-Based Visualization of Voice Characteristics in Lecture Videos’ Captions**  
-*Tim Schlippe, Katrin Fritsche, Ying Sun, Matthias Wölfel*  
-International Conference on Artificial Intelligence in Education Technology 2023 – [[paper](https://link.springer.com/chapter/10.1007/978-981-19-8040-4_8)]
+
+**Dynamic Object Scanning: Object-Based Elastic Timeline for Quickly Browsing First-Person Videos**  
+*Seita Kayukawa, Keita Higuchi, Ryo Yonetani, Masanori Nakamura, Yoichi Sato, Shigeo Morishima*  
+CHI 2018 (extended abstract) – [[paper](https://dl.acm.org/doi/pdf/10.1145/3170427.3186501)]
+
+
