@@ -7,12 +7,12 @@
 
 ## some inspiration
 
-- [[mediapipe](https://github.com/google/mediapipe)]
+- [mediapipe](https://github.com/google/mediapipe)
 
 ## possible tools
 
-- [[ffmpeg](https://ffmpeg.org/)]
-- [[moviepy](https://zulko.github.io/moviepy/)]
+- [ffmpeg](https://ffmpeg.org/)
+- [moviepy](https://zulko.github.io/moviepy/)
 
 ## requirements
 
