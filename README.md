@@ -19,3 +19,10 @@
 - takes in an `.mp4` and a `.json` as input
 - this doesn't need to be blazing fast: for now the idea is to create visualizations after a video is processed, not at streaming time 
 - [optional] modular: different outputs of videopipe can be shown to the user on the same video
+
+
+## references
+
+**Dynamic Object Scanning: Object-Based Elastic Timeline for Quickly Browsing First-Person Videos**  
+*Seita Kayukawa, Keita Higuchi, Ryo Yonetani, Masanori Nakamura, Yoichi Sato, Shigeo Morishima*  
+CHI 2018 – [[paper](https://dl.acm.org/doi/pdf/10.1145/3170427.3186501)]
