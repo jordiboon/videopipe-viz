@@ -15,7 +15,8 @@
 ## some inspiration
 
 - [mediapipe](https://github.com/google/mediapipe)
-- Google' CLoud Video Intelligence https://youtu.be/hX71H78UYAc?t=845, https://youtu.be/hX71H78UYAc?t=974
+- Google's Cloud Video Intelligence, [here](https://youtu.be/hX71H78UYAc?t=845) and [here](https://youtu.be/hX71H78UYAc?t=974)
+- annotation platforms. See [Labelbox](https://docs.labelbox.com/docs/video-annotations)], [label studio](https://github.com/heartexlabs/label-studio) (open source!)
 
 ## possible tools
 
