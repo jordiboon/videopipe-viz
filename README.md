@@ -16,7 +16,7 @@
 
 - [mediapipe](https://github.com/google/mediapipe)
 - Google's Cloud Video Intelligence, [here](https://youtu.be/hX71H78UYAc?t=845) and [here](https://youtu.be/hX71H78UYAc?t=974)
-- annotation platforms. See [Labelbox](https://docs.labelbox.com/docs/video-annotations)], [label studio](https://github.com/heartexlabs/label-studio) (open source!)
+- annotation platforms. For example [Labelbox](https://docs.labelbox.com/docs/video-annotations), [label studio](https://github.com/heartexlabs/label-studio) (open source!)
 
 ## possible tools
 
@@ -32,7 +32,6 @@ International Conference on Artificial Intelligence in Education Technology 2023
 **A survey of surveys on the use of visualization for interpreting machine learning models**  
 *Angelos Chatzimparmpas, Rafael M. Martins, Ilir Jusufi, Andreas Kerren*  
 Information visualization 2020 – [[paper](https://journals.sagepub.com/doi/10.1177/1473871620904671)]
-
 
 **Dynamic Object Scanning: Object-Based Elastic Timeline for Quickly Browsing First-Person Videos**  
 *Seita Kayukawa, Keita Higuchi, Ryo Yonetani, Masanori Nakamura, Yoichi Sato, Shigeo Morishima*  
