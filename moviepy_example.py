@@ -11,6 +11,7 @@ import pandas as pd
 path = '' 
 v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
 task = '_face_detection_datamodel'
+RESIZE_DIM = 640
 
 ## read face detection json
 
@@ -29,8 +30,10 @@ frame_duration = 1 / fps
 ## play a subclip
 
 # in bare python
-clip.subclip(t_start=0*frame_duration, t_end=100*frame_duration).preview()
+clip.subclip(t_start=0*frame_duration, t_end=86*frame_duration).preview()
 pg.quit()
+
+clip.subclip(t_start=0*frame_duration, t_end=86*frame_duration).preview()
 
 # in a notebook environment
 clip.subclip(t_start=0*frame_duration, t_end=5*frame_duration).ipython_display()
@@ -46,9 +49,24 @@ face_to_draw = faces_detected[0]
 # this is slow
 for i, f in enumerate(frames):
   if i == face_to_draw['dimension_idx']:
-    img = Image.fromarray(f)
+    IMG = Image.fromarray(f)
+
+img = IMG
 
 img.show()
 
-draw = ImageDraw.Draw(img)
-draw.rectangle(face_to_draw['faces'][0]['bb_faces'], None, 'red')
+w, h = img.size
+width_ratio = w / RESIZE_DIM
+height_ratio = h / RESIZE_DIM
+
+y0, x1, y1, x0  = face_to_draw['faces'][0]['bb_faces']
+
+img_array = np.array(img)
+cropped_img = Image.fromarray(img_array[int(y0 * height_ratio) : int(y1 * height_ratio),
+                                        int(x0 * width_ratio) : int(x1 * width_ratio)])
+cropped_img.show()
+
+## todo: figure out how PIL Image reads coordinates. Apparently not like our model out of the box.
+
+# draw = ImageDraw.Draw(img)
+# draw.rectangle(face_to_draw['faces'][0]['bb_faces'], None, 'red')
