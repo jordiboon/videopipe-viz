@@ -37,7 +37,7 @@ clip.subclip(t_start=0*frame_duration, t_end=86*frame_duration).preview()
 clip.subclip(t_start=0*frame_duration,
              t_end=5*frame_duration).ipython_display()
 
-# draw a bounding box on a single frame for t he first detected face
+# draw a bounding box on a single frame for the first detected face
 
 frames = clip.iter_frames()
 
