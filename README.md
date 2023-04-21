@@ -23,6 +23,25 @@
 - [ffmpeg](https://ffmpeg.org/)
 - [moviepy](https://zulko.github.io/moviepy/) ([concatenate clips](https://zulko.github.io/moviepy/getting_started/compositing.html))
 
+## overview of JSON output
+
+The different JSON output files may need different visualization approaches. In the table below you can see the characteristics of each JSON and possible visualization solutions.
+
+
+| JSON output             | Single frame | Spans multiple frames | Thresholding | SRT-fileable |       GIFable       |
+|-------------------------|:------------:|:---------------------:|:------------:|:------------:|:-------------------:|
+| Face detection          |       ✔      |   ✔ (for dense data)  |       ✔      |              | ✔ (for sparse data) |
+| Subtitles               |              |           ✔           |              |       ✔      |                     |
+| Shot boundaries         |       ✔      |                       |              |              |          ✔          |
+| Text detection          |       ✔      |   ✔ (for dense data)  |              |              | ✔ (for sparse data) |
+| Image Aesthetics        |       ✔      |                       |              |       ?      |          ✔          |
+| Language identification |              |           ✔           |              |       ✔      |                     |
+| Midroll marker          |       ✔      |                       |              |              |          ?          |
+| Speech Gap              |              |           ✔           |              |       ✔      |                     |
+| Still picker            |       ✔      |                       |              |              |          ✔          |
+| Voice activity          |              |           ✔           |              |       ✔      |                     |
+| Speech Recognition      |              |           ✔           |              |       ✔      |                     |
+
 ## references
 
 **AI-Based Visualization of Voice Characteristics in Lecture Videos’ Captions**  
