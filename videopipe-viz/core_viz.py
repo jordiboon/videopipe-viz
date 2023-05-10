@@ -1,14 +1,14 @@
 from PIL import Image
-from moviepy.editor import VideoFileClip
+from moviepy.editor import *
 import subprocess
 import os
 
-def change_moviepy_ffmpeg():
-    try:
-        from moviepy.config import change_settings
-        change_settings({"FFMPEG_BINARY":"ffmpeg"})
-    except:
-        pass
+# Change the ffmpeg binary of moviepy to the local one to allow for hw acceleration.
+try:
+    from moviepy.config import change_settings
+    change_settings({"FFMPEG_BINARY":"ffmpeg"})
+except:
+    pass
 
 def get_frame(clip, frame_number, frame_duration):
     return Image.fromarray(clip.get_frame(frame_number * frame_duration))
@@ -24,7 +24,7 @@ def write_audioclip(clip, v_name, logger=None):
 def write_clip(clip, name, postfix = '', audio=True, fps=25, logger=None):
     # Try hw acceleration, else use cpu.
     try:
-        clip.write_videofile(name + '_' + postfix + '.mp4', codec='h264_nvenc', fps=fps, logger=logger, audio=audio, preset='3')
+        clip.write_videofile(name + '_' + postfix + '.mp4', codec='h264_nvenc', fps=fps, logger=logger, audio=audio, preset='fast')
     except:
         try:
             clip.write_videofile(name + '_' + postfix + '.mp4', codec='libx264', fps=fps, logger=logger, audio=audio, preset='ultrafast')

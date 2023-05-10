@@ -5,10 +5,6 @@ from numpy import asarray
 
 from core_viz import *
 
-# Change ffmpeg used by moviepy to the one installed if one is installed, otherwise use the one from moviepy.
-# This is necessary for using HW acceleration.
-change_moviepy_ffmpeg()
-
 # this can be empty if the video file and its videopipe output are at the same
 # location as the code
 path = ''
@@ -20,11 +16,17 @@ output_filename = 'output.mp4'
 duration_t = 1/25
 
 def read_face_detection(path, v_name, task):
+    '''
+    Read the face detection JSON file.
+    '''
     faces = pd.read_json(path + v_name + '/' + v_name + task + '.json', lines = True)
     faces_detected = [f for f in faces.data[0] if len(f['faces']) > 0]
     return faces_detected
 
-def draw_bounding_boxes(face, img, width_ratio, height_ratio, color = 'red', width = 5):
+def draw_bounding_boxes(face, img, width_ratio, height_ratio, color = 'red', bb_width = 5):
+    '''
+    Draw all bounding boxes on the detected faces of the image.
+    '''
     for i in range(len(face['faces'])):
         y0, x1, y1, x0 = face['faces'][i]['bb_faces']
         y0 = int(y0 * height_ratio)
@@ -33,10 +35,14 @@ def draw_bounding_boxes(face, img, width_ratio, height_ratio, color = 'red', wid
         x1 = int(x1 * width_ratio)
 
         draw = ImageDraw.Draw(img)
-        draw.rectangle([x0, y0, x1, y1], outline=color, width=width)
+        draw.rectangle([x0, y0, x1, y1], outline=color, width=bb_width)
     return img
 
-def get_face_clips(faces_detected, faces_limit=100, timestamp=0, frame_duration=1/25, duration_t=1/25):
+def get_face_clips(clip, faces_detected, faces_limit=100, timestamp=0, frame_duration=1/25, duration_t=1/25):
+    '''
+    Returns a list of clips with the face detected frames added. faces_limit
+    determines how many face detected frames are added.
+    '''
     clips = []
     face_count = 0
     for face in faces_detected:
@@ -93,7 +99,7 @@ prev_t = 0
 # Create video clips with detected faces and concatenate them into one video.
 for i in range(rounds):
     clips = []
-    clips, prev_t = get_face_clips(faces_detected[i * faces_limit:], faces_limit, prev_t, frame_duration, duration_t)
+    clips, prev_t = get_face_clips(clip, faces_detected[i * faces_limit:], faces_limit, prev_t, frame_duration, duration_t)
 
     write_clip(concatenate_videoclips(clips), v_name, str(i), retain_audio, fps)
     f.write('file ' + v_name + '_' + str(i) + '.mp4\n')
