@@ -1,5 +1,6 @@
 from PIL import Image
 from moviepy.editor import *
+from numpy import asarray
 import subprocess
 import os
 
@@ -10,12 +11,40 @@ try:
 except:
     pass
 
-def get_frame(clip, frame_number, frame_duration):
+def get_frame(clip, frame_number, frame_duration=1/25):
     return Image.fromarray(clip.get_frame(frame_number * frame_duration))
 
 def read_clip(v_name):
     clip = VideoFileClip(v_name + '.mp4')
     return clip
+
+def create_text_clip(txt, txtclip_dur=1/25, color='white', font="Century-Schoolbook-Roman", fontsize=70, kerning=-2, interline=-1, bg_color='black', clipsize = (1920, 1080)):
+    '''
+    Create frame of length txtclip_dur with txt in the center.
+    '''
+    txtclip = (TextClip(txt, color=color,
+            font=font, fontsize=fontsize, kerning=kerning,
+            interline=interline, bg_color=bg_color, size = clipsize)
+            .set_duration(txtclip_dur)
+            .set_position(('center')))
+    return txtclip
+
+def create_top_frame_clip(clip, top_frames, duration_f=3, duration_t=1):
+    '''
+    Returns a clip of the top frames preceded by a clip showing the ranking of
+    the clip.
+    '''
+    clips = []
+    count = len(top_frames)
+    for frame in top_frames:
+        txtclip = create_text_clip('Frame ' + str(count), duration_t)
+        f = get_frame(clip, frame)
+        imgclip = ImageClip(asarray(f), duration=duration_f)
+        clips.append(txtclip)
+        clips.append(imgclip)
+        count -= 1
+
+    return clips
 
 def write_audioclip(clip, v_name, logger=None):
     audio = clip.audio
