@@ -57,8 +57,8 @@ def get_txt_clips(clip, texts_detected, txt_frame_duration, timestamp_offset=0):
 
 if __name__ == '__main__':
     video_path = 'Videos/'
-    v_name = 'D9003811_RUNNING_JEAN-PIERRE'
-    task = '_text_detection_datamodel'
+    v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
+    task = '_frame_text_detection_datamodel'
     RESIZE_DIM = 640
     output_filename = 'output.mp4'
     duration_t = 1/25
@@ -88,8 +88,8 @@ if __name__ == '__main__':
         clips, prev_ts = get_txt_clips(clip, txt_batch, txt_frame_duration, prev_ts)
 
         # TODO: Add final subclip.
-        write_clip(mp.concatenate_videoclips(clips))
-        f.write('file txt_detection_' + str(round) + '.mp4\n')
+        write_clip(mp.concatenate_videoclips(clips), v_name, str(round), False)
+        f.write('file ' + v_name + '_' + str(round) + '.mp4\n')
     f.close()
 
-files_to_video(clip, v_name, 'txt_detection.txt', output_filename)
+files_to_video(clip, v_name, round, 'txt_detection.txt', output_filename)
