@@ -16,8 +16,8 @@ technical_output_filename = 'technical_output.gif'
 both_output_filename = 'both_output.gif'
 
 # Set duration frame and text clips.
-duration_f = 3
-duration_t = 1
+still_duration = 3
+text_frame_duration = 1
 
 def read_image_aesthetics(path, v_name):
     '''
@@ -56,9 +56,9 @@ aesthetics_detected = read_image_aesthetics(path, v_name)
 top_aesthetics, top_technical, top_both = top_aesthetic_frames(aesthetics_detected, frame_amt)
 
 # Create the txt and img clips.
-aesthetics_clips = create_top_frame_clip(clip, top_aesthetics, duration_f=duration_f, duration_t=duration_t)
-technical_clips = create_top_frame_clip(clip, top_technical, duration_f=duration_f, duration_t=duration_t)
-both_clips = create_top_frame_clip(clip, top_both, duration_f=duration_f, duration_t=duration_t)
+aesthetics_clips = create_top_frame_clip(clip, top_aesthetics, still_duration=still_duration, text_frame_duration=text_frame_duration)
+technical_clips = create_top_frame_clip(clip, top_technical, still_duration=still_duration, text_frame_duration=text_frame_duration)
+both_clips = create_top_frame_clip(clip, top_both, still_duration=still_duration, text_frame_duration=text_frame_duration)
 
 aesthetics_clips = concatenate_videoclips(aesthetics_clips)
 technical_clips = concatenate_videoclips(technical_clips)
