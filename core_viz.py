@@ -88,17 +88,18 @@ def write_clip(clip, name, postfix='', audio=True, fps=25, logger=None):
         except:
             raise Exception('An error occured while writing the video file.')
 
-
-def files_to_video(clip, v_name, filename, output_name, retain_audio=True):
+def files_to_video(clip, v_name, rounds, filename, output_name, retain_audio=True):
     ''' Concatenate the video files in filename and write it to output_name.
         If retain_audio is True, the audio will be added to the video. '''
-    concatenate_videofiles(filename, output_name)
-
     if retain_audio:
+        # First write to temp.mp4 then add audio and write to output_name.
+        concatenate_videofiles(filename, "temp.mp4")
         write_audioclip(clip, v_name)
-        add_audio_to_video(output_name, filename + '_audio.mp3', output_name)
+        add_audio_to_video("temp.mp4", v_name + '_audio.mp3', output_name)
+    else:
+        concatenate_videofiles(filename, output_name)
 
-    clean_up_files(filename, 1, filename + '_face_detection.txt')
+    clean_up_files(v_name, rounds, filename)
 
 
 def concatenate_videofiles(filename, output_name):
@@ -114,7 +115,7 @@ def add_audio_to_video(video_name, audio_name, output_name):
 def clean_up_files(v_name, rounds, txt_filename, output_filename='temp.mp4'):
     ''' Clean up the files created during the process. '''
     # Delete all the subclips.
-    for i in range(rounds):
+    for i in range(rounds + 1):
         os.remove(v_name + '_' + str(i) + '.mp4')
 
     # Delete the face_detection.txt file.
