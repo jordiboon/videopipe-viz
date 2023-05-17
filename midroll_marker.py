@@ -1,7 +1,7 @@
 import pandas as pd
-import moviepy.editor as mp
-from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+import core_viz as core
+from PIL import Image, ImageDraw, ImageFont
 
 
 def get_frame_by_number(clip, frame_number):
@@ -13,9 +13,14 @@ def get_frame_by_number(clip, frame_number):
 
 
 def make_frame_line(clip, midroll_marker):
-    """ Make a row of frames indicating the frame-precise position of the midroll. """
+    """ Make a row of frames indicating
+    the frame-precise position of the midroll. """
     w, h = clip.size
 
+    # If the midroll_marker in the JSON is an integer,
+    # it indicates the frame after the midroll.
+    # If the marker is a float e.g. '4.5' this indicates
+    # that the midroll should be between frames 4 and 5.
     try:
         frame_after_midroll = int(midroll_marker)
         frame_before_midroll = frame_after_midroll - 1
@@ -34,7 +39,7 @@ def make_frame_line(clip, midroll_marker):
     draw.text((2.2 * w, h/2), f"timestamps: {frame_before_midroll/clip.fps} and {frame_after_midroll/clip.fps}", font=font, fill='white')
 
     frame_line.paste(get_frame_by_number(clip, frame_after_midroll), (3 * w, 0))
-    frame_line.paste(get_frame_by_number(clip, frame_after_midroll + 1), (4* w, 0))
+    frame_line.paste(get_frame_by_number(clip, frame_after_midroll + 1), (4 * w, 0))
 
     return frame_line
 
@@ -48,14 +53,14 @@ if __name__ == '__main__':
     v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
     task = '_midroll_marker_output'
 
-    ## read thumbnail json
+    # read thumbnail json
 
     midroll = pd.read_json(f"{path + v_name}/{v_name + task}.json", lines=True)
     midroll_markers = midroll['midroll_markers'][0]
-    midroll_markers
 
-    ## Read video file with moviepy
+    # Read video file with moviepy
 
-    clip = mp.VideoFileClip(video_path + v_name + '.mp4')
+    clip = core.read_clip(v_name)
+    # mp.VideoFileClip(video_path + v_name + '.mp4')
 
     make_frame_line(clip, midroll_markers[0]).save(f"{v_name}_midroll_indication.jpg")
