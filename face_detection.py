@@ -97,7 +97,9 @@ if __name__ == '__main__':
         face_batch = faces_detected[start_face_number:end_face_number]
         clips, prev_ts = get_face_clips(clip, face_batch, face_frame_duration, prev_ts)
 
-        # TODO: Add final subclip if there are no more faces to be added.
+        if (round == len(faces_detected) // faces_per_round):
+            clips.append(clip.subclip(prev_ts, clip.duration))
+
         write_clip(mp.concatenate_videoclips(clips), v_name, str(round), False)
         f.write('file ' + v_name + '_' + str(round) + '.mp4\n')
     f.close()

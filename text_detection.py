@@ -87,7 +87,9 @@ if __name__ == '__main__':
         txt_batch = txts_detected[start_txt_number:end_txt_number]
         clips, prev_ts = get_txt_clips(clip, txt_batch, txt_frame_duration, prev_ts)
 
-        # TODO: Add final subclip.
+        if (round == len(txts_detected) // txts_per_round):
+            clips.append(clip.subclip(prev_ts, clip.duration))
+
         write_clip(mp.concatenate_videoclips(clips), v_name, str(round), False)
         f.write('file ' + v_name + '_' + str(round) + '.mp4\n')
     f.close()
