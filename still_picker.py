@@ -1,21 +1,7 @@
 import pandas as pd
-from moviepy.editor import *
+import moviepy.editor as mp
 
 from core_viz import *
-
-# this can be empty if the video file and its videopipe output are at the same
-# location as the code
-path = ''
-v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
-task = '_still_picker_output'
-w, h = 1920, 1080
-
-# Set output filename.
-output_filename = 'thumbnail_output.gif'
-
-# Set duration frame and text clips.
-duration_f = 3
-duration_t = 1
 
 def read_still_picker(path, v_name):
     '''
@@ -25,9 +11,10 @@ def read_still_picker(path, v_name):
     thumbnail_frames = [f for f in thumbnail.thumbnails_by_frameindex]
     return thumbnail_frames
 
-def top_still_frames(thumbnail_frames, frame_amt=10):
+def top_still_frames(thumbnail_frames, frame_amt=5):
     '''
-    Return the id of top frames thumbnail frames based on the value in the JSON file.
+    Returns a list of the top frame ids based on their rank in the JSON file
+    in ascending order.
     '''
     # Only get the value of each key
     frames = [{'rank': v['rank'], 'frame': v['frame']} for d in thumbnail_frames for k, v in d.items()]
@@ -37,20 +24,37 @@ def top_still_frames(thumbnail_frames, frame_amt=10):
     frames = [frame_id['frame'] for frame_id in frames[:frame_amt][::-1]]
     return frames
 
-clip = read_clip(v_name)
-fps = clip.fps
-frame_duration = 1/fps
+if __name__ == '__main__':
 
-# Set how many frames are included in the clip.
-frame_amt = 10
+    # this can be empty if the video file and its videopipe output are at the same
+    # location as the code
+    path = ''
+    v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
+    task = '_still_picker_output'
+    w, h = 1920, 1080
 
-# Read JSON and get top frames.
-thumbnail_frames = read_still_picker(path, v_name)
-top_frames = top_still_frames(thumbnail_frames, frame_amt)
+    v_name = path + v_name
 
-# Create the txt and img clips.
-thumbnail_clips = create_top_frame_clip(clip, top_frames, duration_f=duration_f, duration_t=duration_t)
+    # Set output filename.
+    output_filename = 'thumbnail_output.gif'
 
-# Create the final clip.
-thumbnail_clip = concatenate_videoclips(thumbnail_clips)
-thumbnail_clip.write_gif(output_filename, fps=1)
+    # Set duration frame and text clips.
+    duration_f = 3
+    duration_t = 1
+
+    # Set amount of frames included in the gif.
+    frame_amt = 5
+
+    # Read video file.
+    clip = read_clip(v_name)
+
+    # Read JSON
+    thumbnail_frames = read_still_picker(path, v_name)
+    top_frames = top_still_frames(thumbnail_frames, frame_amt=frame_amt)
+
+    # Create the txt and img clips.
+    clips = create_top_frame_clip(clip, top_frames, duration_f=duration_f, duration_t=duration_t)
+
+    # Create the final clips
+    final_clip = mp.concatenate_videoclips(clips)
+    final_clip.write_gif(f"{v_name}_top_" + str(frame_amt) + "_stills.gif", fps=1)

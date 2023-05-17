@@ -1,26 +1,12 @@
 import pandas as pd
-from moviepy.editor import *
+import moviepy.editor as mp
 from PIL import ImageDraw
 from PIL import ImageFont
-from numpy import asarray
+import numpy as np
 
 from core_viz import *
 
-# this can be empty if the video file and its videopipe output are at the same
-# location as the code.
-path = ''
-v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
-task = '_frame_text_detection_datamodel'
-w, h = 1920, 1080
-RESIZE_DIM = 640
-
-# Set output filename.
-output_filename = 'output.mp4'
-
-# Set duration of each text detected frame.
-duration_t = 1/25
-
-def read_text_detection(path, v_name):
+def read_text_detection(path, v_name, task):
     '''
     Read the text detection JSON file.
     '''
@@ -28,89 +14,82 @@ def read_text_detection(path, v_name):
     texts_detected = [f for f in text.data[0] if len(f['text']) > 0]
     return texts_detected
 
-def draw_text(texts, img, color='black', bb_color='red', font=ImageFont.truetype("Lato-Bold.ttf", 20), bb_width=3):
-    '''
-    Draw all detected texts on the image.
-    '''
+def draw_text_bb(frame, texts, color='blue', bb_width=5, txtcolor='black'):
+    """ Draw all the detected text in 'texts' on top of the frame. """
+    copy = frame.copy()
     for text in texts:
-        left, top, width, height, conf, text = texts[text].values()
-        draw = ImageDraw.Draw(img)
-        draw.rectangle(((left, top), ((left + width), (top + height))), outline = bb_color, width = bb_width)
-        text = text + " (conf: " + str(conf) + ")"
-        draw.text((left, top), text, font=font, fill = color)
-    return img
+        left, top, width, height, conf, detected_text = texts[text].values()
+        right = left + width
+        bottom = top + height
+        draw = ImageDraw.Draw(copy)
+        draw.rectangle([left, bottom, right, top], outline=color, width=bb_width)
+        draw.text((left, bottom), detected_text + "(" + str(conf) + ")", font=font, fill=txtcolor)
+    return copy
 
-def get_text_clips(clip, texts_detected, texts_limit=100, timestamp=0, frame_duration=1/25, duration_t=1/25):
-    '''
-    Returns a list of clips with the text detected frames added. texts_limit
-    determines how many text detected frames are added.
-    '''
+def make_frame(clip, txts):
+    """ Get the frame in 'txts' and draw all the texts in 'txts' on top of the frame.
+    Also return the timestamp in the clip of the detected frame.
+    """
+    txt_frame_number = txts['dimension_idx']
+    txt_timestamp = txt_frame_number / clip.fps
+    frame = get_frame_by_number(clip, txt_frame_number)
+    bb_frame = draw_text_bb(frame, txts['text'])
+
+    return txt_timestamp, bb_frame
+
+def get_txt_clips(clip, texts_detected, txt_frame_duration, timestamp_offset=0):
+    """ Make a list of clips with all the text frames in 'texts_detected' inserted in 'clip'.
+    text frames are inserted with a duration of 'txt_frame_duration'.
+    'timestamp_offset' is used to determine the starting time of the first (textless) subclip.
+    """
     clips = []
-    text_count = 0
-    for text in texts_detected:
-        if text_count == texts_limit:
-            break
+    for txt in texts_detected:
+        ts, bb_frame = make_frame(clip, txt)
 
-        img = get_frame(clip, text['dimension_idx'], frame_duration)
-        t = text['dimension_idx'] * frame_duration
+        if (timestamp_offset != ts):
+            clips.append(clip.subclip(timestamp_offset, ts))
 
-        draw_text(text['text'], img)
+        txt_frame_clip = mp.ImageClip(np.asarray(bb_frame), duration=txt_frame_duration)
+        clips.append(txt_frame_clip)
+        timestamp_offset = ts + txt_frame_duration
 
-        if (timestamp != t):
-            clips.append(clip.subclip(timestamp, t))
+    return clips, timestamp_offset
 
-        clips.append(ImageClip(asarray(img), duration=duration_t))
-        img.close()
-        timestamp = t + frame_duration
-        text_count += 1
+if __name__ == '__main__':
+    video_path = 'Videos/'
+    v_name = 'D9003811_RUNNING_JEAN-PIERRE'
+    task = '_text_detection_datamodel'
+    RESIZE_DIM = 640
+    output_filename = 'output.mp4'
+    duration_t = 1/25
 
-        if text == texts_detected[-1]:
-            clips.append(clip.subclip(timestamp, clip.duration))
-            timestamp = clip.duration
+    # Requires font in /usr/share/fonts/truetype.
+    font = ImageFont.truetype("NotoSansMono-Bold.ttf", 20)
 
-    return clips, timestamp
+    txts_detected = read_text_detection(video_path, v_name, task)
 
-# This determines how much of the JSON is read before writing the video.
-# Increasing this value will increase memory usage.
-texts_limit = 100
+    v_name = video_path + v_name
 
-# Requires font in /usr/share/fonts/truetype.
-font = ImageFont.truetype("Lato-Bold.ttf", 20)
+    clip = read_clip(v_name)
+    fps = clip.fps
+    frame_duration = 1 / fps
 
-clip = read_clip(v_name)
-fps = clip.fps
-frame_duration = 1/fps
+    txts_per_round = 100
+    txt_frame_duration = frame_duration
+    prev_ts = 0
 
-if duration_t == frame_duration:
-    retain_audio = False
-    write_audioclip(clip, v_name)
-else:
-    retain_audio = True
+    f = open('txt_detection.txt', 'w')
+    # Create video clips with 'faces_per_round' amount of detected faces per clip.
+    for round in range(len(txts_detected) // txts_per_round + 1):
+        clips = []
+        start_txt_number = round * txts_per_round
+        end_txt_number = start_txt_number + txts_per_round
+        txt_batch = txts_detected[start_txt_number:end_txt_number]
+        clips, prev_ts = get_txt_clips(clip, txt_batch, txt_frame_duration, prev_ts)
 
-texts_detected = read_text_detection(path, v_name)
+        # TODO: Add final subclip.
+        write_clip(mp.concatenate_videoclips(clips))
+        f.write('file txt_detection_' + str(round) + '.mp4\n')
+    f.close()
 
-prev_t = 0
-
-txt_filename = 'text_detection.txt'
-
-f = open(txt_filename, 'w')
-
-rounds = len(texts_detected) // texts_limit + 1
-
-# Get text clips and write them to file. Then concatenate and add audio if
-# necessary.
-for i in range(rounds):
-    clips = []
-    clips, prev_t = get_text_clips(clip, texts_detected[i * texts_limit:], texts_limit, prev_t, frame_duration, duration_t)
-
-    write_clip(concatenate_videoclips(clips), v_name, str(i), retain_audio, fps)
-    f.write('file ' + v_name + '_' + str(i) + '.mp4\n')
-f.close()
-
-if retain_audio:
-    concatenate_videofiles(txt_filename, output_filename)
-else:
-    concatenate_videofiles(txt_filename, 'temp.mp4')
-    add_audio_to_video('temp.mp4', v_name + '_audio.mp3', output_filename)
-
-clean_up_files(v_name, rounds, txt_filename, 'temp.mp4')
+files_to_video(clip, v_name, 'txt_detection.txt', output_filename)
