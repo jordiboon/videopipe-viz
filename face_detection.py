@@ -37,7 +37,7 @@ def make_frame(clip, faces):
     face_frame_number = faces['dimension_idx']
     face_timestamp = face_frame_number / clip.fps
     frame = get_frame_by_number(clip, face_frame_number)
-    bb_frame = draw_bounding_boxes(frame, faces['faces'])
+    bb_frame = draw_bounding_boxes(clip, faces, frame)
 
     return face_timestamp, bb_frame
 
@@ -69,8 +69,8 @@ if __name__ == '__main__':
     #command-line call structure proposal:
     #face_detection.py video_path json_folder_path(optioneel)
     video_path = 'Videos/'
-    v_name = 'D9003811_RUNNING_JEAN-PIERRE'
-    task = '_face_detection_datamodel'
+    v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
+    task = '_frame_face_detection_datamodel'
     RESIZE_DIM = 640
     w, h = 1920, 1080
     output_filename = 'output.mp4'
@@ -98,8 +98,8 @@ if __name__ == '__main__':
         clips, prev_ts = get_face_clips(clip, face_batch, face_frame_duration, prev_ts)
 
         # TODO: Add final subclip if there are no more faces to be added.
-        write_clip(mp.concatenate_videoclips(clips))
-        f.write('file face_detection_' + str(round) + '.mp4\n')
+        write_clip(mp.concatenate_videoclips(clips), v_name, str(round), False)
+        f.write('file ' + v_name + '_' + str(round) + '.mp4\n')
     f.close()
 
-files_to_video(clip, v_name, 'face_detection.txt', output_filename)
+files_to_video(clip, v_name, round, 'face_detection.txt', output_filename)
