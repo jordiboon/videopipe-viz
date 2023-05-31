@@ -9,12 +9,21 @@ frame_duration = 0.04
 allow_overlap = False
 
 def read_subs_json(path, v_name):
+    '''
+    Read the JSON files for language identification, speech gaps and speech recognition.
+    Language identification is used to determine the original language of the video.
+    Speech gaps are used to determine the parts of the video where there is no speech.
+    Speech recognition is used to determine the speech, the language of the speech and the transcription confidence.
+    '''
     language_id = pd.read_json(path + v_name + '/' + v_name + '_language_identification_datamodel.json', lines= True)
     speech_gaps = pd.read_json(path + v_name + '/' + v_name + '_speech_gaps_datamodel.json', lines= True)
     speech_recog = pd.read_json(path + v_name + '/' + v_name + '_whisper_subtitle_creation_datamodel.json', lines= True)
     return language_id, speech_gaps, speech_recog
 
 def speech_single_sub(sub, idx=0, og_language='English'):
+    '''
+    Create a subtitle object for a single speech recognition object.
+    '''
     start = timedelta(seconds = sub['start_time'])
     end = timedelta(seconds = sub['end_time'])
     if og_language != sub['language']:
@@ -25,24 +34,37 @@ def speech_single_sub(sub, idx=0, og_language='English'):
     return sub
 
 def gaps_single_sub(sub, idx=0):
+    '''
+    Create a subtitle object for a single speech gap object.
+    '''
     start = timedelta(seconds = sub['dimension_idx'] * frame_duration)
     end = timedelta(seconds = (sub['end']) * frame_duration)
     sub = srt.Subtitle(index = idx, start = start, end = end, content = '[...]')
     return sub
 
 def gaps_single_sub_no_overlap(sub, speech, last_speech, idx=0):
+    '''
+    Create a subtitle object for a single speech gap object. This function
+    ensures that the speech gap does not overlap with the speech by comparing
+    start and end times of the speech gap and the previous and next speech.
+    '''
     start = timedelta(seconds = sub['dimension_idx'] * frame_duration)
     end = timedelta(seconds = (sub['end']) * frame_duration)
     start_speech = timedelta(seconds = speech['start_time'])
     end_last_speech = timedelta(seconds = last_speech['end_time'])
+
     if start_speech < end:
         end = start_speech
     if end_last_speech > start:
         start = end_last_speech
+
     sub = srt.Subtitle(index = idx, start = start, end = end, content = '[...]')
     return sub
 
 def speech_subs(speech, og_language='English'):
+    '''
+    Create srt file with speech.
+    '''
     subs = []
     ind = 0
     for i in speech:
@@ -55,6 +77,9 @@ def speech_subs(speech, og_language='English'):
         f.write(subs)
 
 def gaps_subs(gaps):
+    '''
+    Create srt file with speech gaps.
+    '''
     subs = []
     ind = 0
     for i in gaps:
@@ -68,8 +93,9 @@ def gaps_subs(gaps):
 
 def combine_subs(speech, gaps, og_language='English', allow_overlap=False):
     '''
-    Create srt file with speech and gaps where the earliest start time is taken
-    first.
+    Create srt file with both speech and speech gaps. If allow_overlap is set to True,
+    the speech gaps will overlap with the speech. If allow_overlap is set to False,
+    the speech gaps will be trimmed to not overlap with the speech.
     '''
     subs = []
     ind = 0
@@ -77,6 +103,8 @@ def combine_subs(speech, gaps, og_language='English', allow_overlap=False):
     while True:
         start = timedelta(seconds = speech[0]['start_time'])
         start_gap = timedelta(seconds = gaps[0]['dimension_idx'] * frame_duration)
+
+        # Add either speech or gap depending on which starts first.
         if start < start_gap:
             sub = speech_single_sub(speech[0], ind, og_language)
             last_speech = speech[0]
@@ -87,8 +115,11 @@ def combine_subs(speech, gaps, og_language='English', allow_overlap=False):
             else:
                 sub = gaps_single_sub_no_overlap(gaps[0], speech[0], last_speech, ind)
             gaps.pop(0)
+
         subs.append(sub)
         ind += 1
+
+        # If there are no more speech or gaps, add the remaining speech or gaps.
         if len(gaps) == 0:
             # Add remaining speech
             for i in speech:
