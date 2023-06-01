@@ -4,7 +4,7 @@ import numpy as np
 from datetime import timedelta
 
 path = 'Videos/'
-v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
+v_name = 'D9004911_LIBIDO_VIEUX_-_PAS_C'
 frame_duration = 0.04
 allow_overlap = False
 
@@ -50,11 +50,14 @@ def gaps_single_sub_no_overlap(sub, speech, last_speech, idx=0):
     '''
     start = timedelta(seconds = sub['dimension_idx'] * frame_duration)
     end = timedelta(seconds = (sub['end']) * frame_duration)
-    start_speech = timedelta(seconds = speech['start_time'])
+
+    if speech:
+        start_speech = timedelta(seconds = speech['start_time'])
+        if start_speech < end:
+            end = start_speech
+
     end_last_speech = timedelta(seconds = last_speech['end_time'])
 
-    if start_speech < end:
-        end = start_speech
     if end_last_speech > start:
         start = end_last_speech
 
@@ -130,7 +133,10 @@ def combine_subs(speech, gaps, og_language='English', allow_overlap=False):
         elif len(speech) == 0:
             # Add remaining gaps
             for i in gaps:
-                sub = gaps_single_sub(i, ind)
+                if allow_overlap:
+                    sub = gaps_single_sub(i, ind)
+                else:
+                    sub = gaps_single_sub_no_overlap(i, None, last_speech, ind)
                 subs.append(sub)
                 ind += 1
             break
