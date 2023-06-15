@@ -1,8 +1,6 @@
 import pandas as pd
 import moviepy.editor as mp
 
-from core_viz import *
-
 def read_shot_detection(path, v_name):
     '''
     Read the JSON file with the shot detection data.
@@ -40,18 +38,35 @@ def get_shot_clips(clip, shots_detected, shot_frame_duration=1, shot_count=1):
     return clips, timestamp, shot_count
 
 if __name__ == '__main__':
-    # this can be empty if the video file and its videopipe output are at the same
-    # location as the code.
-    video_path = 'Videos/'
-    v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
-    task = '_shot_boundaries_datamodel'
+    import argparse
+    from core_viz import *
+
+    # Set default values if no arguments are given
+    def_path = 'Videos/'
+    def_v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
+    def_task = '_shot_boundary_datamodel'
+    def_output_filename = 'output'
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('video_path', default=def_path, nargs='?')
+    parser.add_argument('v_name', default=def_v_name, nargs='?')
+    parser.add_argument('task', default=def_task, nargs='?')
+    parser.add_argument('output_filename', default=def_output_filename, nargs='?')
+    parser.add_argument('input_filename', default=def_v_name, nargs='?')
+
+    args = parser.parse_args()
+    video_path = args.video_path
+    v_name = args.v_name
+    task = args.task
+    output_filename = args.output_filename
+    input_filename = args.input_filename
+
     RESIZE_DIM = 640
-    output_filename = 'output.mp4'
     duration_t = 1
 
     shots_detected = read_shot_detection(video_path, v_name)
 
-    v_name = video_path + v_name
+    v_name = video_path + input_filename
 
     clip = read_clip(v_name)
     fps = clip.fps
@@ -80,4 +95,5 @@ if __name__ == '__main__':
         f.write('file ' + v_name + '_' + str(round) + '.mp4\n')
     f.close()
 
+    output_filename = output_filename + '.mp4'
     files_to_video(clip, v_name, round, 'shot_detection.txt', output_filename, False)
