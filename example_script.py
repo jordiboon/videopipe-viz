@@ -1,4 +1,5 @@
-# Example script for running the different modules together.
+# Example script for running the modules. Also shows how different modules
+# can be combined.
 
 from subprocess import run
 
@@ -21,16 +22,26 @@ output_filename = 'fd'
 # the same as the v_name field.
 input_filename = 'rijksmuseum'
 
-run(['python3', 'videopipe_viz/face_detection.py', video_path, v_name, task, output_filename, input_filename])
+run(['python3', 'face_detection.py', video_path, v_name, task, output_filename, input_filename])
 
 task = '_text_detection_datamodel'
 output_filename = 'fd_td'
 input_filename = 'fd'
 
-run(['python3', 'videopipe_viz/text_detection.py', video_path, v_name, task, output_filename, input_filename])
+run(['python3', 'text_detection.py', video_path, v_name, task, output_filename, input_filename])
 
 task = '_shot_boundaries_datamodel'
 output_filename = 'fd_td_sd'
 input_filename = 'fd_td'
 
-run(['python3', 'videopipe_viz/shot_detection.py', video_path, v_name, task, output_filename, input_filename])
+run(['python3', 'shot_detection.py', video_path, v_name, task, output_filename, input_filename])
+
+# Command for running the subtitles module.
+
+# Setting allow overlap to 'y', '1', 'true' or 'yes', will allow the subtitles to overlap.
+# By default, the subtitles will not overlap.
+allow_overlap = 'y'
+
+run(['python3', 'subtitles.py', video_path, v_name, allow_overlap])
+
+

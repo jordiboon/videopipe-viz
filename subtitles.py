@@ -3,11 +3,6 @@ import srt
 import numpy as np
 from datetime import timedelta
 
-path = 'Videos/'
-v_name = 'D9004911_LIBIDO_VIEUX_-_PAS_C'
-frame_duration = 0.04
-allow_overlap = False
-
 def read_subs_json(path, v_name):
     '''
     Read the JSON files for language identification, speech gaps and speech recognition.
@@ -104,8 +99,12 @@ def combine_subs(speech, gaps, og_language='English', allow_overlap=False):
     ind = 0
     last_speech = None
     while True:
-        start = timedelta(seconds = speech[0]['start_time'])
-        start_gap = timedelta(seconds = gaps[0]['dimension_idx'] * frame_duration)
+        try:
+            start = timedelta(seconds = speech[0]['start_time'])
+            start_gap = timedelta(seconds = gaps[0]['dimension_idx'] * frame_duration)
+        except:
+            print('No detected speech or gaps. Unable to combine subtitles.')
+            exit()
 
         # Add either speech or gap depending on which starts first.
         if start < start_gap:
@@ -146,6 +145,24 @@ def combine_subs(speech, gaps, og_language='English', allow_overlap=False):
         f.write(subs)
 
 if __name__ == '__main__':
+    import argparse
+
+    def_path = 'Videos/'
+    def_v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
+    def_allow_overlap = False
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('video_path', default=def_path, nargs='?')
+    parser.add_argument('v_name', default=def_v_name, nargs='?')
+    parser.add_argument('allow_overlap', default=False, type=lambda x: (str(x).lower() in ['true','1', 'yes', 'y']), nargs='?')
+
+    args = parser.parse_args()
+    path = args.video_path
+    v_name = args.v_name
+    allow_overlap = args.allow_overlap
+
+    frame_duration = 1/25
+
     language_id, speech_gaps, speech_recog = read_subs_json(path, v_name)
     og_language = language_id['data'][0][0]['language']
     speech = [f for f in speech_recog.data[0]]
