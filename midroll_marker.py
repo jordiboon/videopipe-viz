@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import core_viz as core
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -45,22 +44,36 @@ def make_frame_line(clip, midroll_marker):
 
 
 if __name__ == '__main__':
+    import core_viz as core
+    import argparse
 
-    # this can be empty if the video file and its videopipe output are at the same
-    # location as the code
-    path = ''
-    video_path = 'Videos/'
-    v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
-    task = '_midroll_marker_output'
+    # Set default values if no arguments are given
+    def_video_path = 'Videos/'
+    def_v_name = 'HIGH_LIGHTS_I_SNOWMAGAZINE_I_SANDER_26'
+    def_task = '_midroll_marker_output'
+    def_output_filename = 'midroll_output'
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('video_path', default=def_video_path, nargs='?')
+    parser.add_argument('v_name', default=def_v_name, nargs='?')
+    parser.add_argument('task', default=def_task, nargs='?')
+    parser.add_argument('output_filename', default=def_output_filename, nargs='?')
+    parser.add_argument('input_filename', default=def_v_name, nargs='?')
+
+    args = parser.parse_args()
+    video_path = args.video_path
+    v_name = args.v_name
+    task = args.task
+    output_filename = args.output_filename
+    input_filename = args.input_filename
 
     # read thumbnail json
 
-    midroll = pd.read_json(f"{path + v_name}/{v_name + task}.json", lines=True)
+    midroll = pd.read_json(f"{video_path + v_name}/{v_name + task}.json", lines=True)
     midroll_markers = midroll['midroll_markers'][0]
 
     # Read video file with moviepy
 
-    clip = core.read_clip(v_name)
-    # mp.VideoFileClip(video_path + v_name + '.mp4')
+    clip = core.read_clip(video_path + input_filename)
 
-    make_frame_line(clip, midroll_markers[0]).save(f"{v_name}_midroll_indication.jpg")
+    make_frame_line(clip, midroll_markers[0]).save(f"{output_filename}.jpg")
